@@ -5,57 +5,59 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NameClickListener{
-    private RecyclerView rvStudentList;
-    private List<String> listStudent;
+public class MainActivity extends AppCompatActivity implements RemoveClickListener, View.OnClickListener {
+    private RecyclerView recycler;
+    private RecyclerAdapter adapter;
+    private List<String> itemList;
+    private EditText etName;
+    private Button btnAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        fillListData();
-        setupRecyclerView();
-
-        CustomAdapter customAdapter = new CustomAdapter(listStudent, this);
-        rvStudentList.setAdapter(customAdapter);
+        this.etName=(EditText) findViewById(R.id.etName);
+        this.btnAdd=(Button) findViewById(R.id.btnAdd);
+        setUpRecyclerData();
+        setUpRecyclerView();
+        this.btnAdd.setOnClickListener(this);
     }
 
-    private void setupRecyclerView(){
-        rvStudentList = (RecyclerView) findViewById(R.id.rvStudentList);
-        rvStudentList.setLayoutManager(new LinearLayoutManager(this));
-
-        /*
-        * TODO
-        *  Custom adapter
-        *  setAdapter
-        * */
+    private void setUpRecyclerView(){
+        this.recycler=(RecyclerView) findViewById(R.id.rvList);
+        this.recycler.setLayoutManager( new LinearLayoutManager(this));
+        adapter=new RecyclerAdapter(this, itemList);
+        this.recycler.setAdapter(adapter);
     }
-    private void  fillListData(){
-        listStudent = new ArrayList<>();
-        listStudent.add("Toni");
-        listStudent.add("Ivan");
-        listStudent.add("WTF");
-        listStudent.add("Fran");
-        listStudent.add("Cristiano");
-        listStudent.add("Marin");
-        listStudent.add("Monkey");
-        listStudent.add("Dragon");
-        listStudent.add("Dragon");
-        listStudent.add("Dragon");
-        listStudent.add("Dragon");
-        listStudent.add("Dragon");
-        listStudent.add("Dragon");
+
+    private void setUpRecyclerData(){
+        itemList=new ArrayList<>();
     }
 
     @Override
-    public void onNameClickListener(int position) {
-        Log.d("onNameClickListener","Element" + position + "remove.");
+    public void onRemoveClick(int position) {
+        adapter.removeCell(position);
+    }
 
+    @Override
+    public void onClick(View v) {
+        int position=itemList.size();
+        if(!TextUtils.isEmpty(etName.getText())) {
+            String name = etName.getText().toString();
+            adapter.addNewCell(name, position);
+        }
+        else {
+            Toast.makeText(this,"Insert NAME!!!", Toast.LENGTH_LONG).show();
+        }
     }
 }
